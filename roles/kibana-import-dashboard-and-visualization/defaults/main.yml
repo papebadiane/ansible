@@ -1,0 +1,17 @@
+server_group: server
+interface: lo
+dashboard_path: ./dashboard.json
+visualization_path: ./visualization.json
+
+index_pattern: "oio-*"
+time_filter: "@timestamp"
+
+created_index_enabled: true
+import_dashboard_enabled: true
+import_visualization_enabled: true
+
+
+
+dashboard: "{{ lookup('file', dashboard_path) | from_json }}"
+visualization: "{{ lookup('file', visualization_path) | from_json }}"
+kibanaServer: "{{ hostvars[groups[server_group][0]]['ansible_'+ interface]['ipv4']['address'] }}"
