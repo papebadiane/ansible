@@ -1,4 +1,4 @@
-Ansible role to create index_pattern, import dashboard and visualization on kibana server
+Ansible role: Import kibana's dashboard and visualization
 =====
 
 
