@@ -3,7 +3,7 @@
   wait_for:
     host: "{{kibana_server_ip}}"
     port: 5601
-    delay: 10
+    delay: 60
 
 - name: "Create index oio-*"
   uri:
