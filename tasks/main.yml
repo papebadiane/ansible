@@ -1,10 +1,15 @@
 ---
+- name: Wait until kibana is up  !!!!!
+  wait_for:
+    host: "{{kibana_server_ip}}"
+    port: 5601
+    delay: 10
 
 - name: "Create index oio-*"
   uri:
-    url: "http://{{kibanaServer}}:5601/api/saved_objects/index-pattern"
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/index-pattern"
     method: POST
-    body: "{{ '{\"attributes\": {\"title\": \"'+ index_pattern +'\", \"timeFieldName\": \"'+ time_filter +'\"}}' }}"
+    body: "{{ '{\"attributes\": {\"title\": \"'+ kibana_index_pattern +'\", \"timeFieldName\": \"'+ kibana_time_filter +'\"}}' }}"
     body_format: json
     headers:
       Content-Type: "application/json; charset=utf-8"
@@ -21,7 +26,7 @@
 
 - name: "POST bulk get"
   uri:
-    url: "http://{{kibanaServer}}:5601/api/saved_objects/bulk_get"
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/bulk_get"
     method: POST
     body: "[{{ bulk_get.ansible_facts }}]"
     body_format: json
@@ -35,7 +40,7 @@
 
 - name: "Make the oio-* as the defaul index"
   uri:
-    url: "http://{{kibanaServer}}:5601/api/kibana/settings/defaultIndex"
+    url: "http://{{kibana_server_ip}}:5601/api/kibana/settings/defaultIndex"
     method: POST
     body: "{{ dict_value.ansible_facts }}"
     body_format: json
@@ -45,9 +50,9 @@
 
 - name: "PUT the index pattern"
   uri:
-    url: "http://{{kibanaServer}}:5601/api/saved_objects/index-pattern/{{ id}}"
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/index-pattern/{{ id}}"
     method: PUT
-    body: "{{ '{\"attributes\": {\"title\": \"'+ index_pattern +'\", \"timeFieldName\": \"'+ time_filter +'\"}}' }}"
+    body: "{{ '{\"attributes\": {\"title\": \"'+ kibana_index_pattern +'\", \"timeFieldName\": \"'+ kibana_time_filter +'\"}}' }}"
     body_format: json
     headers:
       Content-Type: "application/json; charset=utf-8"
@@ -58,13 +63,13 @@
 - name: Extract all _id
   set_fact:
     item_id: "{{ item._id }}"
-  with_items: "{{ dashboard }}"
+  with_items: "{{ kibana_dashboard }}"
   register: dict_id
 
 - name: Extract all _source
   set_fact:
     attributes: "{{ item._source }}"
-  with_items: "{{ dashboard }}"
+  with_items: "{{ kibana_dashboard }}"
   register: dict_attributes
 
 - name: Create a list of  attributes
@@ -75,7 +80,7 @@
 
 - name: "Import kibana's dashboard "
   uri:
-    url: "http://{{kibanaServer}}:5601/api/saved_objects/dashboard/{{ item.0 }}?overwrite=true"
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/dashboard/{{ item.0 }}?overwrite=true"
     method: POST
     body: "{{ item.1 }}"
     body_format: json
@@ -91,7 +96,7 @@
 - name: Get old index_id
   set_fact:
     attributes: "{{ item._source }}"
-  with_items: "{{ visualization }}"
+  with_items: "{{ kibana_visualization }}"
   register: source
 
 
@@ -107,7 +112,7 @@
 
 - name: Replace the old index_id to a new  index_id
   replace:
-      path: visualization.json
+      path: {{ kibana_visualization_path }}
       regexp: "{{old_index_id}}"
       replace: "{{id}}"
 
@@ -115,14 +120,14 @@
 - name: Extract all _id
   set_fact:
     item_id: "{{ item._id }}"
-  with_items: "{{ visualization }}"
+  with_items: "{{ kibana_visualization }}"
   register: dict_id
 
 
 - name: Extract all _source
   set_fact:
     attributes: "{{ item._source }}"
-  with_items: "{{ visualization }}"
+  with_items: "{{ kibana_visualization }}"
   register: dict_attributes
 
 - name: Create a list of  attributes
@@ -133,7 +138,7 @@
 
 - name: "POST bulk get"
   uri:
-    url: "http://{{kibanaServer}}:5601/api/saved_objects/bulk_get"
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/bulk_get"
     method: POST
     body: '[{"id": "25eb9c90-4213-11e8-8c1f-edc7dd6da6be", "type": "index-pattern"}]'
     body_format: json
@@ -144,7 +149,7 @@
 
 - name: "Import kibana's visualization"
   uri:
-    url: "http://{{kibanaServer}}:5601/api/saved_objects/visualization/{{ item.0 }}?overwrite=true"
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/visualization/{{ item.0 }}?overwrite=true"
     method: POST
     body: "{{ item.1 }}"
     body_format: json

@@ -1,5 +1,2 @@
 [server]
 localhost ansible_connection=local
-
-[server:vars]
-ansible_user=pape
