@@ -10,8 +10,8 @@ kibana_created_index_enabled: true
 kibana_import_dashboard_enabled: true
 kibana_import_visualization_enabled: true
 
-kibana_server_ip: "{{ hostvars[groups[server_group][0]]['ansible_'+ interface]['ipv4']['address'] }}"
+kibana_server_ip: "{{ hostvars[groups[kibana_server_group][0]]['ansible_'+ kibana_interface]['ipv4']['address'] }}"
 
 
-kibana_dashboard: "{{ lookup('file', dashboard_path) | from_json }}"
-kibana_visualization: "{{ lookup('file', visualization_path) | from_json }}"
+kibana_dashboard: "{{ lookup('file', kibana_dashboard_path) | from_json }}"
+kibana_visualization: "{{ lookup('file', kibana_visualization_path) | from_json }}"
