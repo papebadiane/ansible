@@ -112,7 +112,7 @@
 
 - name: Replace the old index_id to a new  index_id
   replace:
-      path: {{ kibana_visualization_path }}
+      path: "{{ kibana_visualization_path }}"
       regexp: "{{old_index_id}}"
       replace: "{{id}}"
 
