@@ -10,7 +10,7 @@
     method: PUT
     headers:
       Content-Type: "application/json; charset=utf-8"
-      
+
 - name: "Create index oio-*"
   uri:
     url: "http://{{kibana_server_ip}}:5601/api/saved_objects/index-pattern"
@@ -53,7 +53,7 @@
     headers:
       Content-Type: "application/json; charset=utf-8"
       Kbn-xsrf: kibana
-
+  no_log: True
 - name: "PUT the index pattern"
   uri:
     url: "http://{{kibana_server_ip}}:5601/api/saved_objects/index-pattern/{{ id}}"
@@ -96,6 +96,7 @@
   with_together:
       - "{{ list_id }}"
       - "{{ list_attributes }}"
+  no_log: True
 
 # ********* import visualization *****************************
 
@@ -165,4 +166,15 @@
   with_together:
       - "{{ list_id }}"
       - "{{ list_attributes }}"
+  no_log: True
+- name: Change the timeZone to UTC+00:00
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/kibana/settings/dateFormat:tz"
+    method: POST
+    body: "{\"value\":\"UTC\"}"
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
+
 ...
