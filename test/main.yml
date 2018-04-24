@@ -2,4 +2,8 @@
 
 - hosts : server
   roles:
-    - role: kibana-import-dashboard-and-visualization
+    - role: ansible-role-kibana-import-dashboard-and-visualization
+      kibana_server_group: server
+      kibana_interface: lo
+      kibana_dashboard_path: /home/pape/Documents/projects/logAnalyzer/elk/kibana/dashboard/dashboard.json
+      kibana_visualization_path: /home/pape/Documents/projects/logAnalyzer/elk/kibana/dashboard/visualization.json
