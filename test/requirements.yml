@@ -1,0 +1,4 @@
+---
+- src: https://github.com/papebadiane/ansible-role-kibana-import-dashboard-and-visualization
+  version: master
+...
