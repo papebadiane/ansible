@@ -1,0 +1,68 @@
+---
+- name: Get old index_id
+  set_fact:
+    attributes: "{{ item._source }}"
+  with_items: "{{ kibana_visualization }}"
+  register: source
+  no_log: True
+
+- set_fact:
+      sources_list: "{{source.results | map(attribute='ansible_facts') | list }}"
+- set_fact:
+    searchSourceJSON: "{{ sources_list[0].attributes.kibanaSavedObjectMeta.searchSourceJSON }}"
+  register: sourceJSON
+  no_log: True
+- set_fact:
+    old_index_id: "{{ sourceJSON.ansible_facts.searchSourceJSON.index }}"
+
+
+- name: Replace the old index_id to a new  index_id
+  replace:
+      path: "{{ kibana_visualization_path }}"
+      regexp: "{{old_index_id}}"
+      replace: "{{id}}"
+
+
+- name: Extract all _id
+  set_fact:
+    item_id: "{{ item._id }}"
+  with_items: "{{ kibana_visualization }}"
+  register: dict_id
+  no_log: True
+
+- name: Extract all _source
+  set_fact:
+    attributes: "{{ item._source }}"
+  with_items: "{{ kibana_visualization }}"
+  register: dict_attributes
+  no_log: True
+- name: Create a list of  attributes
+  set_fact:
+      list_attributes: "{{dict_attributes.results | map(attribute='ansible_facts') | list }}"
+      list_id: "{{ dict_id.results | map(attribute='ansible_facts.item_id') | list }}"
+
+
+- name: "POST bulk get"
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/bulk_get"
+    method: POST
+    body: '[{"id": "25eb9c90-4213-11e8-8c1f-edc7dd6da6be", "type": "index-pattern"}]'
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
+
+
+- name: "Import kibana's visualization"
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/visualization/{{ item.0 }}?overwrite=true"
+    method: POST
+    body: "{{ item.1 }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
+  with_together:
+      - "{{ list_id }}"
+      - "{{ list_attributes }}"
+  no_log: True

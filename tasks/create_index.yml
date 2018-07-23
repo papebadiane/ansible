@@ -1,0 +1,66 @@
+---
+
+- name: Wait for kibana startup...
+  wait_for_connection:
+    delay: 120
+    timeout: 300
+- name: "Unlock RO index"
+  uri:
+    url: "http://{{kibana_server_ip}}:9200/_all/_settings"
+    body: "{\"index.blocks.read_only_allow_delete\": null}"
+    method: PUT
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+
+- name: "Create index oio-*"
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/index-pattern"
+    method: POST
+    body: "{{ '{\"attributes\": {\"title\": \"'+ kibana_index_pattern +'\", \"timeFieldName\": \"'+ kibana_time_filter +'\"}}' }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
+  register: index
+  no_log: True
+
+- name: Extract index id and type
+  set_fact:
+    id: "{{ index.json.id }}"
+    type: "{{ index.json.type }}"
+  register: bulk_get
+  no_log: True
+
+- name: "POST bulk get"
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/bulk_get"
+    method: POST
+    body: "[{{ bulk_get.ansible_facts }}]"
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
+
+- set_fact:
+    value: "{{ id }}"
+  register: dict_value
+  no_log: True
+- name: "Make the oio-* as the defaul index"
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/kibana/settings/defaultIndex"
+    method: POST
+    body: "{{ dict_value.ansible_facts }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
+  no_log: True
+- name: "PUT the index pattern"
+  uri:
+    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/index-pattern/{{ id}}"
+    method: PUT
+    body: "{{ '{\"attributes\": {\"title\": \"'+ kibana_index_pattern +'\", \"timeFieldName\": \"'+ kibana_time_filter +'\"}}' }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json; charset=utf-8"
+      Kbn-xsrf: kibana
