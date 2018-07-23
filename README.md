@@ -20,7 +20,7 @@ Path of file which content the
 ```
 dashboard_path: ./dashboard.json
 visualization_path: ./visualization.json
-
+search_path: ./search.json
 ```
 Kibana index pattern and time filter that will be create.
 ```

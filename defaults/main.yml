@@ -2,6 +2,7 @@ kibana_server_group: server
 kibana_interface: lo
 kibana_dashboard_path: ./dashboard.json
 kibana_visualization_path: ./visualization.json
+kibana_search_path: ./search.json
 
 kibana_index_pattern: "oio-*"
 kibana_time_filter: "@timestamp"
@@ -9,9 +10,11 @@ kibana_time_filter: "@timestamp"
 kibana_created_index_enabled: true
 kibana_import_dashboard_enabled: true
 kibana_import_visualization_enabled: true
+kibana_import_search_enabled: true
 
 kibana_server_ip: "{{ hostvars[groups[kibana_server_group][0]]['ansible_'+ kibana_interface]['ipv4']['address'] }}"
 
 
 kibana_dashboard: "{{ lookup('file', kibana_dashboard_path) | from_json }}"
 kibana_visualization: "{{ lookup('file', kibana_visualization_path) | from_json }}"
+kibana_search: "{{ lookup('file', kibana_search_path) | from_json }}"
