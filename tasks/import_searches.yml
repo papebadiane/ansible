@@ -42,21 +42,13 @@
       list_id: "{{ dict_id.results | map(attribute='ansible_facts.item_id') | list }}"
 
 
-- name: "POST bulk get"
-  uri:
-    url: "http://{{kibana_server_ip}}:5601/api/saved_objects/bulk_get"
-    method: POST
-    body: '[{"id": "25eb9c90-4213-11e8-8c1f-edc7dd6da6be", "type": "index-pattern"}]'
-    body_format: json
-    headers:
-      Content-Type: "application/json; charset=utf-8"
-      Kbn-xsrf: kibana
-
-
 - name: "Import kibana's visualization"
   uri:
     url: "http://{{kibana_server_ip}}:5601/api/saved_objects/visualization/{{ item.0 }}?overwrite=true"
     method: POST
+    user: "{{ kibana_user }}"
+    password: "{{ kibana_password }}"
+    force_basic_auth: yes
     body: "{{ item.1 }}"
     body_format: json
     headers:
@@ -66,3 +58,4 @@
       - "{{ list_id }}"
       - "{{ list_attributes }}"
   no_log: True
+

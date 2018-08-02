@@ -3,6 +3,6 @@
 - hosts : server
   roles:
     - role: ansible-role-kibana-import-dashboard-and-visualization
-      kibana_dashboard_path: /home/pape/test/dashboard.json
-      kibana_visualization_path: /home/pape/test/visualization.json
-      kibana_search_path: /home/pape/test/search.json
+      kibana_dashboard_path: kibana/dashboard.json
+      kibana_visualization_path: kibana/visualization.json
+      kibana_search_path: kibana/search.json

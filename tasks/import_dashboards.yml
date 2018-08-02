@@ -21,6 +21,9 @@
   uri:
     url: "http://{{kibana_server_ip}}:5601/api/saved_objects/dashboard/{{ item.0 }}?overwrite=true"
     method: POST
+    user: "{{ kibana_user }}"
+    password: "{{ kibana_password }}"
+    force_basic_auth: yes
     body: "{{ item.1 }}"
     body_format: json
     headers:

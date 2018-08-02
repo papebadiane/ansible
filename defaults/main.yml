@@ -18,3 +18,6 @@ kibana_server_ip: "{{ hostvars[groups[kibana_server_group][0]]['ansible_'+ kiban
 kibana_dashboard: "{{ lookup('file', kibana_dashboard_path) | from_json }}"
 kibana_visualization: "{{ lookup('file', kibana_visualization_path) | from_json }}"
 kibana_search: "{{ lookup('file', kibana_search_path) | from_json }}"
+
+kibana_user: "kibana"
+kibana_password: "kibana"
