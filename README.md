@@ -6,17 +6,17 @@ Ansible role: Import kibana's dashboard and visualization
 None
 
 
-# Role Variables
+# Role variables
 
 The Variables listed below is setup with default values (see `defaults/main.yml`)
 
-kibana's group host and interface
+ Group (of inventory) and interface of the kibana server
 
 ```
 server_group: server
 interface: lo
 ```
-Path of file which content the
+Kibana's object to import
 ```
 dashboard_path: ./dashboard.json
 visualization_path: ./visualization.json
