@@ -21,7 +21,7 @@
       path: "{{ kibana_visualization_path }}"
       regexp: "{{old_index_id}}"
       replace: "{{id}}"
-
+  delegate_to: localhost
 
 - name: Extract all _id
   set_fact:
